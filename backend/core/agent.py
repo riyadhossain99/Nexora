@@ -63,6 +63,43 @@ def _make_http_session():
     session.proxies = {"http": None, "https": None}
     return session
 
+
+def _solve_acw_sc_v2(arg1: str) -> str:
+    if not isinstance(arg1, str) or len(arg1) != 40:
+        return ""
+    box = [
+        15, 35, 29, 24, 33, 16, 1, 38, 10, 9,
+        19, 31, 40, 27, 22, 23, 25, 13, 6, 11,
+        39, 18, 20, 8, 14, 21, 32, 26, 2, 30,
+        7, 4, 17, 5, 3, 28, 34, 37, 12, 36,
+    ]
+    res = list(range(40))
+    for i in range(40):
+        j = arg1[i]
+        for k in range(40):
+            if box[k] == i + 1:
+                res[k] = j
+    arg2 = "".join(res)
+    box2 = "3000176000856006061501533003690027800375"
+    out = ""
+    for i in range(0, 40, 2):
+        arg_h = int(arg2[i : i + 2], 16)
+        box_h = int(box2[i : i + 2], 16)
+        out += hex(arg_h ^ box_h)[2:].zfill(2)
+    return out
+
+
+def _post_with_waf(session, url, headers, payload, timeout=90):
+    r = session.post(url, headers=headers, json=payload, timeout=timeout)
+    if r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
+        m = re.search(r"var arg1=['\"]([a-fA-F0-9]{40})['\"];", r.text)
+        if m:
+            acw_cookie = _solve_acw_sc_v2(m.group(1))
+            if acw_cookie:
+                session.cookies.set("acw_sc__v2", acw_cookie)
+                r = session.post(url, headers=headers, json=payload, timeout=timeout)
+    return r
+
 DEFAULT_PROMPT = (
     "You are a dedicated sales assistant for {business} on WhatsApp. "
     "You strictly answer questions ONLY about {business}, its products, catalog items, pricing, "
@@ -374,7 +411,10 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
 
         api_messages = [{"role": "system", "content": system_prompt}]
         for m in baseline[-40:]:
-            api_messages.append({"role": m.get("role", "user"), "content": m.get("content", "")})
+            content = str(m.get("content", ""))
+            if "temporarily unavailable" in content:
+                continue
+            api_messages.append({"role": m.get("role", "user"), "content": content})
         use_responses = (
             "agentrouter.org" in (config.llm_base_url or "").lower()
             or (config.llm_base_url or "").rstrip("/").endswith("/responses")
@@ -434,7 +474,12 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                     except Exception:
                         pass
 
-                    response = session.post(url, headers=headers, json=resp_payload, timeout=90)
+                    # Reasoning models reject temperature parameter
+                    m_name = (config.model_name or "").lower()
+                    if "gpt-6" in m_name or "o1" in m_name or "o3" in m_name or "reasoning" in resp_payload or "reasoning_effort" in resp_payload:
+                        resp_payload.pop("temperature", None)
+
+                    response = _post_with_waf(session, url, headers=headers, payload=resp_payload, timeout=90)
                     response.raise_for_status()
                     data = response.json()
                     tokens += int((data.get("usage") or {}).get("total_tokens", 0) or 0)
@@ -482,10 +527,15 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                         })
             else:
                 for _ in range(5):
-                    response = session.post(
+                    chat_payload = _request_payload(config, api_messages)
+                    m_name = (config.model_name or "").lower()
+                    if "gpt-6" in m_name or "o1" in m_name or "o3" in m_name or "reasoning" in chat_payload or "reasoning_effort" in chat_payload:
+                        chat_payload.pop("temperature", None)
+                    response = _post_with_waf(
+                        session,
                         url,
                         headers=headers,
-                        json=_request_payload(config, api_messages),
+                        payload=chat_payload,
                         timeout=90,
                     )
                     response.raise_for_status()
