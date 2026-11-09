@@ -86,7 +86,7 @@ class XamppFeatures(DatabaseFeatures):
     # shortcut: tested with this app on XAMPP's MariaDB 10.4; remove after a server upgrade.
     @property
     def minimum_database_version(self):
-        return (10, 4) if self.connection.mysql_is_mariadb else super().minimum_database_version
+        return (10, 4) if self.connection.mysql_is_mariadb else (8, 0)
 
     can_return_columns_from_insert = False  # INSERT ... RETURNING needs MariaDB 10.5+.
 
