@@ -38,13 +38,20 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+]
+try:
+    import whitenoise  # noqa: F401
+    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMiddleware")
+except ImportError:
+    pass
+MIDDLEWARE.extend([
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
+])
 
 ROOT_URLCONF = "nexora.urls"
 
@@ -85,6 +92,10 @@ class XamppFeatures(DatabaseFeatures):
 
 
 DatabaseWrapper.features_class = XamppFeatures
+_db_options = {"charset": "utf8mb4", "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"}
+if os.environ.get("DB_SSL", "0") in ("1", "true", "True"):
+    _db_options["ssl"] = {"ssl_mode": "REQUIRED"}
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -92,8 +103,8 @@ DATABASES = {
         "USER": os.environ.get("DB_USER", "root"),
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4", "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
+        "PORT": int(os.environ.get("DB_PORT", "3306")),
+        "OPTIONS": _db_options,
     }
 }
 
@@ -106,6 +117,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [FRONTEND_DIR / "static"]
+STATIC_ROOT = PROJECT_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = FRONTEND_DIR / "media"
 LOGIN_URL = "/login/"
