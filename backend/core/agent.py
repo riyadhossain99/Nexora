@@ -91,17 +91,17 @@ def _solve_acw_sc_v2(arg1: str) -> str:
 
 
 def _post_with_waf(session, url, headers, payload, timeout=90):
-    r = session.post(url, headers=headers, json=payload, timeout=timeout)
-    print(f"[post_with_waf DEBUG] 1st status={r.status_code} ct={r.headers.get('content-type')} len={len(r.text)} preview={r.text[:200]!r}")
+    req_headers = dict(headers or {})
+    req_headers["Accept"] = "application/json"
+    req_headers["Content-Type"] = "application/json"
+    r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
     if r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
         m = re.search(r"var arg1=['\"]([a-fA-F0-9]{40})['\"];", r.text)
         if m:
             acw_cookie = _solve_acw_sc_v2(m.group(1))
-            print(f"[post_with_waf DEBUG] solved acw_sc__v2={acw_cookie}")
             if acw_cookie:
                 session.cookies.set("acw_sc__v2", acw_cookie)
-                r = session.post(url, headers=headers, json=payload, timeout=timeout)
-                print(f"[post_with_waf DEBUG] 2nd status={r.status_code} ct={r.headers.get('content-type')} len={len(r.text)} preview={r.text[:200]!r}")
+                r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
     return r
 
 DEFAULT_PROMPT = (
@@ -443,6 +443,7 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
         headers = {
             "User-Agent": "opencode/1.17.12",
             "Content-Type": "application/json",
+            "Accept": "application/json",
         }
         if config.api_key:
             headers["Authorization"] = f"Bearer {config.api_key}"
