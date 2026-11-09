@@ -95,7 +95,8 @@ class XamppFeatures(DatabaseFeatures):
 from django.db.backends.mysql.schema import DatabaseSchemaEditor
 _orig_skip_default = DatabaseSchemaEditor.skip_default
 def _tidb_skip_default(self, field):
-    if field.db_type(self.connection) == "json":
+    t = str(field.db_type(self.connection) or "").lower()
+    if any(k in t for k in ["json", "text", "blob"]):
         return True
     return _orig_skip_default(self, field)
 DatabaseSchemaEditor.skip_default = _tidb_skip_default
