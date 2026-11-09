@@ -1058,9 +1058,10 @@ def admin_models(request):
     if key:
         headers["Authorization"] = f"Bearer {key}"
 
-    endpoints = [f"{base}/models"]
+    endpoints = []
     if not base.endswith("/v1"):
         endpoints.append(f"{base}/v1/models")
+    endpoints.append(f"{base}/models")
     endpoints.append(f"{base}/api/tags")
 
     session = _make_http_session()
@@ -1072,9 +1073,14 @@ def admin_models(request):
         try:
             r = session.get(ep, headers=headers, timeout=12)
             if r.status_code == 200:
-                response = r
-                successful_endpoint = ep
-                break
+                try:
+                    r.json()
+                    response = r
+                    successful_endpoint = ep
+                    break
+                except ValueError:
+                    last_err = f"Endpoint {ep} returned non-JSON response."
+                    continue
             elif r.status_code in (401, 403):
                 return JsonResponse(
                     {"error": "The provider rejected the API key. Check the key and try again."},
