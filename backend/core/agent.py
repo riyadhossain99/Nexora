@@ -92,6 +92,8 @@ def _solve_acw_sc_v2(arg1: str) -> str:
 
 def _post_with_waf(session, url, headers, payload, timeout=90):
     req_headers = dict(headers or {})
+    req_headers.setdefault("User-Agent", "codex_cli_rs")
+    req_headers.setdefault("Originator", "codex_cli_rs")
     req_headers["Accept"] = "application/json"
     req_headers["Content-Type"] = "application/json"
     r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
@@ -441,7 +443,8 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
             url = base_clean + "/chat/completions"
 
         headers = {
-            "User-Agent": "opencode/1.17.12",
+            "User-Agent": "codex_cli_rs",
+            "Originator": "codex_cli_rs",
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
