@@ -16,7 +16,7 @@ WORKDIR /app
 
 # Install Python requirements
 COPY backend/requirements.txt /app/backend/
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt gunicorn whitenoise
 
 # Install Node dependencies for WhatsApp bridge
 COPY backend/whatsapp/package*.json /app/backend/whatsapp/
