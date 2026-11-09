@@ -1084,11 +1084,12 @@ def admin_models(request):
     if not base or not base.startswith(("http://", "https://")):
         return JsonResponse({"error": "Enter a valid http(s) base URL first."}, status=400)
 
-    headers = {
-        "User-Agent": "codex_cli_rs",
-        "Originator": "codex_cli_rs",
-        "Accept": "application/json",
-    }
+    headers = {"Accept": "application/json"}
+    if "agentrouter" in base.lower():
+        headers["User-Agent"] = "codex_cli_rs"
+        headers["Originator"] = "codex_cli_rs"
+    else:
+        headers["User-Agent"] = "Nexora/1.0 (https://nexora.app)"
     if key:
         headers["Authorization"] = f"Bearer {key}"
 
@@ -1209,11 +1210,14 @@ def admin_test_llm(request):
         return JsonResponse({"ok": False, "live": False, "error": "Enter a valid base URL first."}, status=400)
 
     headers = {
-        "User-Agent": "codex_cli_rs",
-        "Originator": "codex_cli_rs",
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
+    if "agentrouter" in base.lower():
+        headers["User-Agent"] = "codex_cli_rs"
+        headers["Originator"] = "codex_cli_rs"
+    else:
+        headers["User-Agent"] = "Nexora/1.0 (https://nexora.app)"
     if key:
         headers["Authorization"] = f"Bearer {key}"
 
@@ -1299,6 +1303,8 @@ def admin_test_llm(request):
                 if isinstance(extra, dict):
                     for k, v in extra.items():
                         if k not in ("model", "messages", "max_tokens"):
+                            if k == "reasoning" and isinstance(v, dict):
+                                continue
                             body[k] = v
             except Exception:
                 pass

@@ -92,12 +92,16 @@ def _solve_acw_sc_v2(arg1: str) -> str:
 
 def _post_with_waf(session, url, headers, payload, timeout=90):
     req_headers = dict(headers or {})
-    req_headers.setdefault("User-Agent", "codex_cli_rs")
-    req_headers.setdefault("Originator", "codex_cli_rs")
+    is_agentrouter = "agentrouter" in str(url).lower()
+    if is_agentrouter:
+        req_headers.setdefault("User-Agent", "codex_cli_rs")
+        req_headers.setdefault("Originator", "codex_cli_rs")
+    else:
+        req_headers.setdefault("User-Agent", "Nexora/1.0 (https://nexora.app)")
     req_headers["Accept"] = "application/json"
     req_headers["Content-Type"] = "application/json"
     r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
-    if r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
+    if is_agentrouter and r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
         m = re.search(r"var arg1=['\"]([a-fA-F0-9]{40})['\"];", r.text)
         if m:
             acw_cookie = _solve_acw_sc_v2(m.group(1))
@@ -216,6 +220,10 @@ def _request_payload(config, messages):
     if isinstance(extra, dict):
         for key, value in extra.items():
             if key not in ("model", "messages", "tools"):
+                # Top-level 'reasoning' dict is ONLY for OpenAI Responses API (/responses).
+                # For standard chat/completions (Groq, OpenAI, NIM, OpenRouter), it causes HTTP 400.
+                if key == "reasoning" and isinstance(value, dict):
+                    continue
                 payload[key] = value
     return payload
 
@@ -443,11 +451,14 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
             url = base_clean + "/chat/completions"
 
         headers = {
-            "User-Agent": "codex_cli_rs",
-            "Originator": "codex_cli_rs",
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        if "agentrouter" in base_clean.lower():
+            headers["User-Agent"] = "codex_cli_rs"
+            headers["Originator"] = "codex_cli_rs"
+        else:
+            headers["User-Agent"] = "Nexora/1.0 (https://nexora.app)"
         if config.api_key:
             headers["Authorization"] = f"Bearer {config.api_key}"
 
@@ -570,9 +581,15 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                             }
                         )
         except Exception as exc:
-            print(f"[run_agent ERROR] LLM failure for '{tenant.business_name}' (phone={phone}): {exc}")
+            err_details = str(exc)
+            if hasattr(exc, "response") and exc.response is not None:
+                try:
+                    err_details += f" | Provider body: {exc.response.text[:300]}"
+                except Exception:
+                    pass
+            print(f"[run_agent ERROR] LLM failure for '{tenant.business_name}' (phone={phone}): {err_details}")
             traceback.print_exc()
-            _log_error(config, f"agent tenant={tenant.id} phone={phone}: {exc}")
+            _log_error(config, f"agent tenant={tenant.id} phone={phone}: {err_details}")
             conv.needs_human = True
             reply = (
                 "Sorry, our assistant is temporarily unavailable. "
