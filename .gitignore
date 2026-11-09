@@ -1,0 +1,11 @@
+node_modules/
+backend/whatsapp/sessions/
+frontend/media/
+__pycache__/
+*.pyc
+database/*.sqlite3*
+.venv/
+.env
+email-auth.md
+database/*.sql.gz
+database/*backup*.sql

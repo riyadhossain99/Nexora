@@ -1,0 +1,27 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The page you were looking for does not exist on Nexora.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191816" media="(prefers-color-scheme: dark)">
+  <title>Page not found — Nexora</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}?v=5">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <h1>Page not found</h1>
+      <p class="muted">That address does not match any page here. It may have moved, or the link had a typo.</p>
+      <div class="row">
+        <a class="btn" href="/">Go home</a>
+        <a class="btn ghost" href="/login/">Sign in</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

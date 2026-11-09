@@ -1,0 +1,301 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="description" content="Nexora business dashboard — orders, catalog and WhatsApp conversations.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191816" media="(prefers-color-scheme: dark)">
+  <title>Nexora — {{ tenant.business_name }}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}?v=12">
+</head>
+<body>
+  <a class="skip" href="#main-content">Skip to content</a>
+  <header class="topbar">
+    <div class="brand">Nexora <span>{{ tenant.business_name }}</span></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="stats">Stats</button>
+      <button class="tab" data-tab="orders">Orders</button>
+      <button class="tab" data-tab="active">Active Orders</button>
+      <button class="tab" data-tab="products">Products</button>
+      <button class="tab" data-tab="assistant">Assistant</button>
+      <button class="tab" data-tab="settings">Settings</button>
+      <button class="tab" data-tab="conversations">Conversations</button>
+    </nav>
+    <div class="topbar-actions">
+      <button class="btn ghost" data-action="account-open">Account</button>
+      <a class="btn ghost" href="/logout/">Logout</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section id="tab-stats" class="tab-panel active">
+      <div class="cards" data-widget="summary_cards"></div>
+      <div class="card">
+        <h3>Sales</h3>
+        <div data-widget="sales_stats"></div>
+      </div>
+      <div class="card">
+        <h3>Inventory</h3>
+        <div data-widget="inventory_stats"></div>
+      </div>
+    </section>
+
+    <section id="tab-orders" class="tab-panel">
+      <div class="card">
+        <h3>Pending orders</h3>
+        <p class="muted">Accept or cancel — the customer is notified on WhatsApp automatically.</p>
+        <div data-widget="pending_orders"></div>
+      </div>
+      <div class="card">
+        <h3>Order history</h3>
+        <div data-widget="order_history"></div>
+      </div>
+    </section>
+
+    <section id="tab-active" class="tab-panel">
+      <div class="card">
+        <h3>Accepted orders</h3>
+        <p class="muted">Ship books your configured courier, or records manual delivery. Accepting an order only confirms it.</p>
+        <div data-widget="active_orders"></div>
+      </div>
+    </section>
+
+    <section id="tab-products" class="tab-panel">
+      <div class="card">
+        <h3 id="product-form-title">Add product</h3>
+        <form id="product-form" class="form-grid">
+          <input type="hidden" name="id" value="">
+          <div class="grid-2">
+            <input name="name" placeholder="Product name" required>
+            <input name="base_price" type="number" step="0.01" min="0" placeholder="Base price">
+          </div>
+          <input name="image_url" placeholder="Image URL (optional)">
+          <div class="upload-row">
+            <label class="btn ghost upload-btn">Upload photo
+              <input type="file" id="product-image" accept="image/jpeg,image/png,image/webp" hidden>
+            </label>
+            <span id="upload-status" class="muted"></span>
+          </div>
+          <div id="image-preview" class="image-preview" hidden></div>
+          <textarea name="description" placeholder="Description"></textarea>
+
+          <div class="variants-block">
+            <div class="variants-head">
+              <h4>Variants</h4>
+              <span class="muted" id="variant-summary">No variants yet</span>
+            </div>
+            <div class="variant-labels" aria-hidden="true">
+              <span>SKU code</span><span>Size</span><span>Color</span><span>Price</span><span>Stock</span><span></span>
+            </div>
+            <div id="variant-rows"></div>
+            <button type="button" class="btn ghost sm" id="variant-add">+ Add variant</button>
+
+            <div class="variants-tools">
+              <div class="tool-row">
+                <span class="tool-label">Generate size × color grid</span>
+                <input id="gen-sizes" placeholder="Sizes: S, M, L">
+                <input id="gen-colors" placeholder="Colors: Black, Red">
+                <button type="button" class="btn ghost sm" id="variant-generate">Generate</button>
+              </div>
+              <div class="tool-row">
+                <span class="tool-label">Bulk edit</span>
+                <input id="bulk-price" type="number" step="0.01" min="0" placeholder="Price for all">
+                <button type="button" class="btn ghost sm" id="bulk-price-apply">Apply price</button>
+                <input id="bulk-stock" type="number" min="0" placeholder="Stock for all">
+                <button type="button" class="btn ghost sm" id="bulk-stock-apply">Apply stock</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <button type="submit" class="btn">Save product</button>
+            <button type="button" class="btn ghost" id="product-reset">Clear</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="catalog-head">
+          <h3>Catalog</h3>
+          <span class="muted" id="catalog-count"></span>
+        </div>
+        <div class="catalog-toolbar">
+          <input id="catalog-search" type="search" placeholder="Search products, SKUs, colors, sizes…">
+          <div class="filter-chips" id="catalog-filters">
+            <button type="button" class="chip-btn active" data-filter="all">All</button>
+            <button type="button" class="chip-btn" data-filter="active">Active</button>
+            <button type="button" class="chip-btn" data-filter="archived">Archived</button>
+            <button type="button" class="chip-btn" data-filter="low">Low stock</button>
+            <button type="button" class="chip-btn" data-filter="out">Out of stock</button>
+          </div>
+        </div>
+        <div data-widget="catalog_skus"></div>
+      </div>
+    </section>
+
+    <section id="tab-assistant" class="tab-panel">
+      <div class="card">
+        <h3>Assistant</h3>
+        <p class="muted">The greeting is prepended to the agent's first reply in a new conversation. Commands answer instantly without calling the AI.</p>
+        <form id="assistant-form" class="form-grid">
+          <input name="greeting" placeholder="Greeting message, e.g. Welcome to our shop!">
+          <textarea name="commands" placeholder="One command per line: trigger | reply&#10;e.g. delivery | Delivery inside Dhaka takes 2 days."></textarea>
+          <button class="btn" type="submit">Save assistant</button>
+        </form>
+        <div data-widget="tenant_settings" hidden></div>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="tab-panel">
+      <div class="grid">
+        <div class="card">
+          <h3>WhatsApp</h3>
+          <div id="wa-status" class="muted" aria-live="polite">Checking…</div>
+          <div id="wa-qr"></div>
+          <button class="btn" id="wa-connect" type="button">Connect WhatsApp</button>
+        </div>
+        <div class="card">
+          <h3>Business profile</h3>
+          <form id="profile-form" class="form-grid">
+            <input name="business_name" placeholder="Business name" value="{{ tenant.business_name }}">
+            <button class="btn" type="submit">Save profile</button>
+          </form>
+          <p class="muted">Username and password live in the Account menu in the top bar.</p>
+        </div>
+      </div>
+
+      <div class="card" id="shipping-settings-card" style="margin-top: 18px;">
+        <div class="card-header-row">
+          <div>
+            <h3>Shipping</h3>
+            <p class="muted">Enable Pathao to book parcels and save customer tracking when you ship orders. When disabled, delivery is arranged manually by your store.</p>
+          </div>
+          <div class="courier-badge-row">
+            <span class="badge" id="pathao-status-badge">Manual delivery</span>
+          </div>
+        </div>
+
+        <form id="couriers-form" class="couriers-form-wrap">
+            <div class="courier-provider-box" id="box-pathao">
+              <div class="courier-box-header">
+                <div>
+                  <h4>Pathao Courier</h4>
+                  <span class="muted small">Official Pathao merchant integration</span>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="pathao-enabled" name="pathao_enabled">
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-label">Enable Pathao</span>
+                </label>
+              </div>
+
+              <div class="form-grid">
+                <div class="grid-2">
+                  <div>
+                    <label class="field-label" for="pt-env">Environment</label>
+                    <select id="pt-env" name="pathao_environment">
+                      <option value="sandbox">Sandbox (Testing)</option>
+                      <option value="production">Production (Live)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="field-label" for="pt-store-id">Store ID</label>
+                    <input id="pt-store-id" name="pathao_store_id" type="number" min="1" step="1" placeholder="Your pickup store ID" autocomplete="off">
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div>
+                    <label class="field-label" for="pt-client-id">Client ID</label>
+                    <input id="pt-client-id" name="pathao_client_id" placeholder="Pathao Client ID" autocomplete="off">
+                  </div>
+                  <div>
+                    <label class="field-label" for="pt-client-secret">Client Secret</label>
+                    <input id="pt-client-secret" name="pathao_client_secret" type="password" placeholder="Pathao Client Secret" autocomplete="off">
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div>
+                    <label class="field-label" for="pt-username">Username / Email</label>
+                    <input id="pt-username" name="pathao_username" placeholder="Pathao registered email" autocomplete="off">
+                  </div>
+                  <div>
+                    <label class="field-label" for="pt-password">Password</label>
+                    <input id="pt-password" name="pathao_password" type="password" placeholder="Pathao account password" autocomplete="off">
+                  </div>
+                </div>
+                <div class="courier-btn-row">
+                  <button class="btn sm" type="button" id="btn-test-pathao">Test connection</button>
+                  <span class="courier-test-status muted small" id="pt-test-status" aria-live="polite"></span>
+                </div>
+                <p class="muted small">Get your credentials from your Pathao merchant account. Test the connection to see your pickup store IDs. Sandbox bookings are for testing; select Production for real deliveries.</p>
+              </div>
+            </div>
+
+          <div class="courier-save-bar">
+            <button class="btn" type="submit" id="btn-save-couriers">Save shipping settings</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="tab-conversations" class="tab-panel">
+      <div class="grid">
+        <div class="card" data-widget="chat_threads"></div>
+        <div class="card" id="chat-view">
+          <p class="muted">Select a conversation.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="drawer" id="cancel-drawer" aria-hidden="true" aria-label="Cancel order">
+    <h3>Cancel order <span id="cancel-order-id" class="muted"></span></h3>
+    <p class="muted">The customer will be notified on WhatsApp and the reserved stock will be restored.</p>
+    <textarea id="cancel-note" placeholder="Optional note to the customer"></textarea>
+    <div class="row">
+      <button class="btn danger" id="cancel-confirm">Cancel order</button>
+      <button class="btn ghost" id="cancel-close">Keep order</button>
+    </div>
+  </aside>
+
+  <aside class="drawer" id="account-drawer" aria-hidden="true" aria-label="Account settings">
+    <h3>Account settings</h3>
+    <p class="muted">Change your username or password. Your current password is required for any change.</p>
+    <form id="account-form" class="form-grid">
+      <input name="username" value="{{ user.username }}" placeholder="Username" autocomplete="username">
+      <input name="current_password" type="password" placeholder="Current password" autocomplete="current-password" required>
+      <input name="new_password" type="password" placeholder="New password (leave blank to keep)" autocomplete="new-password">
+      <div class="row">
+        <button class="btn" type="submit">Save changes</button>
+        <button class="btn ghost" type="button" id="account-close">Close</button>
+      </div>
+    </form>
+    <div class="account-drawer-courier-box" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);">
+      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600;">Automated Shipping</div>
+      <p class="muted small" style="margin: 4px 0 10px;">Connect Pathao to book shipments automatically.</p>
+      <button class="btn sm ghost" type="button" id="account-open-shipping">Configure shipping</button>
+    </div>
+  </aside>
+  <aside class="drawer order-drawer" id="order-drawer" aria-hidden="true" aria-label="Order details">
+    <div class="order-drawer-header">
+      <div>
+        <div class="order-drawer-eyebrow">Order summary</div>
+        <h3 class="order-drawer-title">Order #<span id="order-detail-id"></span></h3>
+      </div>
+      <button class="btn sm ghost" id="order-drawer-close" type="button" aria-label="Close details">Close</button>
+    </div>
+    <div class="order-drawer-body" id="order-drawer-body">
+      <div class="muted">Loading order details...</div>
+    </div>
+  </aside>
+
+  <div class="backdrop" id="drawer-backdrop"></div>
+
+  <script src="{% static 'charts.js' %}?v=5"></script>
+  <script src="{% static 'app.js' %}?v=14"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nexora — WhatsApp AI sales agent for your business.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191816" media="(prefers-color-scheme: dark)">
+  <title>{{ title }} — Nexora</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}?v=12">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      {% if screen == "login" %}
+      <h1>Nexora</h1>
+      <p class="muted">WhatsApp AI sales agent</p>
+      {% if reset_ok %}<p class="muted">Password updated. Sign in with your new password.</p>{% endif %}
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <input name="username" placeholder="Email or username" autocomplete="username" required autofocus>
+        <input name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+      <p class="muted"><a href="/reset/">Forgot password?</a> · New business? <a href="/signup/">Create an account</a></p>
+
+      {% elif screen == "signup" %}
+      <h1>Create account</h1>
+      <p class="muted">Start selling with an AI assistant on your WhatsApp. We will email you a one-time code to verify your address.</p>
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <input name="business_name" placeholder="Business name" value="{{ values.business_name }}" required autofocus>
+        <input name="email" type="email" placeholder="Email (used to sign in)" value="{{ values.email }}" autocomplete="email" required>
+        <input name="password" type="password" placeholder="Password" autocomplete="new-password" minlength="8" maxlength="16" title="8-16 characters with a lowercase letter, an uppercase letter and a number" required>
+        <p class="muted">8-16 characters with a lowercase letter, an uppercase letter and a number.</p>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+      <p class="muted">Already have an account? <a href="/login/">Sign in</a></p>
+
+      {% elif screen == "reset" %}
+      <h1>Reset password</h1>
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
+      {% if sent %}
+      <p class="muted">If an account exists for <strong>{{ values.email }}</strong>, we emailed a 6-digit code. It expires in 10 minutes.</p>
+      <a class="btn" href="/reset/verify/">Enter code</a>
+      {% else %}
+      <p class="muted">Enter your account email and we will send you a one-time code.</p>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <input name="email" type="email" placeholder="Email" value="{{ values.email }}" autocomplete="email" required autofocus>
+        <button class="btn" type="submit">Send code</button>
+      </form>
+      {% endif %}
+      <p class="muted">Remembered it? <a href="/login/">Back to sign in</a></p>
+
+      {% elif screen == "verify" %}
+      <h1>{% if purpose == "reset" %}Reset password{% else %}Verify your email{% endif %}</h1>
+      <p class="muted">We sent a 6-digit code to <strong>{{ email }}</strong>. It expires in 10 minutes.</p>
+      {% if dev_code %}<p class="muted">Dev mode code: <strong>{{ dev_code }}</strong></p>{% endif %}
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
+      {% if notice %}<p class="muted">{{ notice }}</p>{% endif %}
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <input name="code" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required autofocus>
+        {% if purpose == "reset" %}
+        <input name="password" type="password" placeholder="New password" autocomplete="new-password" minlength="8" maxlength="16" required>
+        <input name="confirm" type="password" placeholder="Confirm new password" autocomplete="new-password" minlength="8" maxlength="16" required>
+        <p class="muted">8-16 characters with a lowercase letter, an uppercase letter and a number.</p>
+        {% endif %}
+        <button class="btn" type="submit">{% if purpose == "reset" %}Set new password{% else %}Verify and continue{% endif %}</button>
+      </form>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <button class="btn ghost" type="submit" name="resend" value="1">Send a new code</button>
+      </form>
+      {% if purpose == "reset" %}
+      <p class="muted"><a href="/reset/">Use a different email</a></p>
+      {% else %}
+      <p class="muted"><a href="/signup/">Back to signup</a></p>
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

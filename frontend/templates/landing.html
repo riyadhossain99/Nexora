@@ -1,0 +1,249 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nexora Agent — WhatsApp AI sales assistant that answers customers, checks stock and takes orders for your business.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#faf7f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1e1b1d" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Nexora Agent — WhatsApp AI sales assistant">
+  <meta property="og:description" content="Your shop replies, checks stock and takes orders on WhatsApp on its own. You approve every order with one click.">
+  <title>Nexora Agent — WhatsApp AI sales assistant</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}?v=12">
+</head>
+<body class="site">
+  <a class="skip" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-in">
+      <a class="brand" href="/">Nexora <span>Agent</span></a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <div class="site-actions">
+        <a class="btn ghost" href="/login/">Sign in</a>
+        <a class="btn" href="/signup/">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="site-main">
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <p class="eyebrow">WhatsApp AI sales assistant</p>
+        <h1>Your shop replies, checks stock and takes orders <em>on its own.</em></h1>
+        <p class="lede">Nexora connects to your WhatsApp number and answers customers in Bangla or English with your real prices and stock. You approve every order with one click.</p>
+        <div class="row">
+          <a class="btn lg grad" href="/signup/">Start free</a>
+          <a class="btn ghost lg" href="#how">See how it works</a>
+        </div>
+        <p class="muted">Free while in beta. No card required.</p>
+      </div>
+      <div class="hero-visual">
+        <div class="mock-window">
+          <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="mock-body" id="demo-chat">
+            <div class="msg user">Do you have the black t-shirt in L?</div>
+            <div class="msg assistant">Yes — TSH-BLK-L is in stock at ৳500. Want me to place an order?</div>
+            <div class="msg user">Yes please, cash on delivery</div>
+            <div class="msg assistant">Order #41 is with the shop for confirmation. I will update you here.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="site-section reveal">
+      <h2>Built for real shop floors</h2>
+      <p class="section-lede">No new app for your customers. No new habits for you. Just your WhatsApp, answering with discipline.</p>
+      <div class="features">
+        <article class="feature wide">
+          <h3>Reads photos and screenshots</h3>
+          <p>Customers often send a picture instead of a name. The agent matches what it sees against your catalog and replies with the exact item, size and price.</p>
+        </article>
+        <article class="feature">
+          <h3>Quotes only real stock</h3>
+          <p>Every reply is grounded in your SKU list — size, color, price, stock. It never invents a product or a delivery promise.</p>
+        </article>
+        <article class="feature">
+          <h3>One-click order desk</h3>
+          <p>New orders land as pending. Accept or cancel with one click and the customer is notified on WhatsApp automatically.</p>
+        </article>
+        <article class="feature">
+          <h3>Human handover</h3>
+          <p>Custom or unclear requests are flagged for you instead of guessed at. Resolve the flag when you have answered.</p>
+        </article>
+        <article class="feature">
+          <h3>Speaks your customer's language</h3>
+          <p>Bangla, English or a mix of both — the agent mirrors the customer and keeps replies short and polite.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how" class="site-section reveal">
+      <h2>How it works</h2>
+      <p class="section-lede">From signup to first answered message in an afternoon.</p>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">01</span>
+          <h3>Connect WhatsApp</h3>
+          <p>Scan one QR code from your dashboard. Your number stays yours — Nexora works through linked devices.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">02</span>
+          <h3>Add your products</h3>
+          <p>Enter products with sizes, colors, prices and stock, or upload a photo for each item. The agent reads from this list only.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">03</span>
+          <h3>Approve orders</h3>
+          <p>Customers chat as usual. You review pending orders, accept or cancel, and ship hand-offs are recorded per order.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="pricing" class="site-section reveal">
+      <h2>Pricing</h2>
+      <p class="section-lede">Plans scale with your catalog. All plans include the full agent, dashboards and human handover.</p>
+      <div class="plans">
+        <article class="plan">
+          <h3>Basic</h3>
+          <p class="plan-price">Free during beta</p>
+          <ul>
+            <li>Up to 50 products</li>
+            <li>5 customer messages per minute</li>
+            <li>Orders, stats and conversations</li>
+          </ul>
+          <a class="btn" href="/signup/">Start free</a>
+        </article>
+        <article class="plan featured">
+          <span class="plan-flag">Popular</span>
+          <h3>Plus</h3>
+          <p class="plan-price">Contact us</p>
+          <ul>
+            <li>Up to 150 products</li>
+            <li>20 customer messages per minute</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn grad" href="/signup/">Get started</a>
+        </article>
+        <article class="plan">
+          <h3>Pro</h3>
+          <p class="plan-price">Contact us</p>
+          <ul>
+            <li>Up to 300 products</li>
+            <li>50 customer messages per minute</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn ghost" href="/signup/">Get started</a>
+        </article>
+      </div>
+      <p class="muted">Plans are switched by the Nexora team while the product is in beta — no billing yet.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-in">
+      <span class="brand">Nexora <span>Agent</span></span>
+      <p class="muted">A proof of concept for WhatsApp-first shops. Built with Django and Baileys.</p>
+      <div class="site-actions">
+        <a href="/login/">Sign in</a>
+        <a href="/signup/">Create account</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var els = document.querySelectorAll(".reveal");
+      if (!("IntersectionObserver" in window)) {
+        els.forEach(function (el) { el.classList.add("revealed"); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
+    (function () {
+      var h1 = document.querySelector(".hero h1");
+      if (!h1) return;
+      var fullHTML = h1.innerHTML;
+      var fullText = h1.textContent;
+      h1.style.minHeight = h1.offsetHeight + "px";
+      var textNode = document.createTextNode("");
+      var caret = document.createElement("span");
+      caret.className = "type-caret";
+      caret.setAttribute("aria-hidden", "true");
+      h1.textContent = "";
+      h1.appendChild(textNode);
+      h1.appendChild(caret);
+      var i = 0;
+      function type() {
+        textNode.nodeValue = fullText.slice(0, ++i);
+        if (i < fullText.length) {
+          setTimeout(type, 40 + Math.random() * 30);
+        } else {
+          setTimeout(function () {
+            h1.innerHTML = fullHTML;
+            h1.style.minHeight = "";
+          }, 350);
+        }
+      }
+      setTimeout(type, 400);
+    })();
+
+    (function () {
+      var chat = document.getElementById("demo-chat");
+      if (!chat) return;
+
+      var steps = [
+        { role: "user", text: "Do you have the black t-shirt in L?", wait: 750 },
+        { role: "assistant", text: "Yes — TSH-BLK-L is in stock at ৳500. Want me to place an order?", typing: 1500, wait: 400 },
+        { role: "user", text: "Yes please, cash on delivery", wait: 1100 },
+        { role: "assistant", text: "Order #41 is with the shop for confirmation. I will update you here.", typing: 1400, wait: 3200 }
+      ];
+      function bubble(role, text) {
+        var el = document.createElement("div");
+        el.className = "msg " + role;
+        el.textContent = text;
+        return el;
+      }
+      function play(idx) {
+        if (idx >= steps.length) {
+          setTimeout(function () { chat.innerHTML = ""; play(0); }, 1200);
+          return;
+        }
+        var step = steps[idx];
+        if (step.typing) {
+          var t = document.createElement("div");
+          t.className = "msg assistant typing";
+          t.innerHTML = "<i></i><i></i><i></i>";
+          chat.appendChild(t);
+          setTimeout(function () {
+            t.remove();
+            chat.appendChild(bubble(step.role, step.text));
+            setTimeout(function () { play(idx + 1); }, step.wait);
+          }, step.typing);
+        } else {
+          chat.appendChild(bubble(step.role, step.text));
+          setTimeout(function () { play(idx + 1); }, step.wait);
+        }
+      }
+      chat.innerHTML = "";
+      setTimeout(function () { play(0); }, 600);
+    })();
+
+  </script>
+</body>
+</html>

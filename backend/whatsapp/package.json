@@ -1,0 +1,15 @@
+{
+  "name": "nexora-wa-bridge",
+  "version": "1.0.0",
+  "description": "WhatsApp Web bridge for Nexora Agent (Baileys + Express)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test test.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.7",
+    "express": "^4.19.2",
+    "qrcode": "^1.5.3"
+  }
+}

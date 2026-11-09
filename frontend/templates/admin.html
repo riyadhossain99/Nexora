@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="description" content="Nexora system admin — tenants, AI provider configuration and logs.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191816" media="(prefers-color-scheme: dark)">
+  <title>Nexora — Admin</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'style.css' %}?v=12">
+</head>
+<body>
+  <a class="skip" href="#main-content">Skip to content</a>
+  <header class="topbar">
+    <div class="brand">Nexora <span>System Admin</span></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="ai">AI provider</button>
+      <button class="tab" data-tab="logs">Logs</button>
+    </nav>
+    <div class="topbar-actions">
+      <button class="btn ghost" data-action="account-open">Account</button>
+      <a class="btn ghost" href="/logout/">Logout</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section id="tab-overview" class="tab-panel active">
+      <div class="cards" data-widget="system_overview"></div>
+      <div class="card">
+        <h3>Tenants and usage</h3>
+        <div data-widget="tenant_usage"></div>
+      </div>
+      <div class="card">
+        <h3>Create business account</h3>
+        <form id="tenant-form" class="form-grid">
+          <input name="business_name" placeholder="Business name" required>
+          <input name="username" placeholder="Username" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button class="btn" type="submit">Create account</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="tab-ai" class="tab-panel">
+      <div class="card">
+        <h3>AI provider and API key</h3>
+        <p class="muted">Any OpenAI-compatible endpoint works: OpenAI, OpenRouter, Groq, Together, Ollama, LM Studio, vLLM… Set the base URL, model name and key. Local servers can leave the key blank.</p>
+        <form id="config-form" class="form-grid">
+          <label class="field-label" for="llm-base-url">Provider Base URL</label>
+          <input id="llm-base-url" name="llm_base_url" placeholder="https://api.openai.com/v1">
+          <label class="field-label" for="llm-api-key">API Key</label>
+          <input id="llm-api-key" name="api_key" type="password" placeholder="API key (leave blank to keep current)" autocomplete="off">
+          <label class="field-label" for="model-select">Model</label>
+          <div class="model-picker">
+            <select name="model_name" id="model-select" aria-label="Model"></select>
+            <button class="btn ghost" type="button" id="model-refresh">Load models</button>
+          </div>
+          <input id="model-custom" name="model_custom" placeholder="Enter a model name" hidden>
+          <label class="field-label" for="request-options">Advanced model options (JSON)</label>
+          <textarea id="request-options" name="request_options" spellcheck="false" placeholder='{"temperature": 0.4, "reasoning_effort": "medium"}'></textarea>
+          <p class="muted">Optional. Merged into every chat request: thinking/reasoning, temperature, max_tokens, top_p and any provider-specific fields. Examples — Groq/OpenAI: <code>{"reasoning_effort": "medium"}</code>, OpenRouter: <code>{"reasoning": {"effort": "high"}}</code>.</p>
+          <label class="field-label" for="system-prompt">System prompt</label>
+          <textarea id="system-prompt" name="system_prompt" placeholder="System prompt (blank = built-in default)"></textarea>
+          <div class="row ai-actions" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:4px;">
+            <button class="btn" type="submit">Save config</button>
+            <button class="btn ghost" type="button" id="model-test">Test API connection</button>
+          </div>
+        </form>
+        <div id="test-result-box" style="margin-top: 14px;" hidden></div>
+        <p class="muted" id="config-status" style="margin-top: 10px;"></p>
+      </div>
+    </section>
+
+    <section id="tab-logs" class="tab-panel">
+      <div class="card" data-widget="config_and_logs"></div>
+    </section>
+  </main>
+
+  <aside class="drawer" id="tenant-drawer" aria-hidden="true" aria-label="Tenant detail">
+    <div class="drawer-head">
+      <h3 id="tenant-name">Tenant</h3>
+      <span id="tenant-plan-badge" class="badge"></span>
+    </div>
+    <div id="tenant-detail" class="tenant-detail"></div>
+    <form id="plan-form" class="form-grid">
+      <label class="field-label" for="plan-select">Plan</label>
+      <select id="plan-select" name="plan">
+        <option value="BASIC">Basic: 50 products, 5 messages/min</option>
+        <option value="PLUS">Plus: 150 products, 20 messages/min</option>
+        <option value="PRO">Pro: 300 products, 50 messages/min</option>
+      </select>
+      <div class="row">
+        <button class="btn" type="submit">Save plan</button>
+        <button class="btn ghost" type="button" id="plan-cancel-btn">Cancel plan</button>
+      </div>
+    </form>
+    <div class="row">
+      <button class="btn ghost" type="button" id="tenant-suspend-btn">Suspend</button>
+      <button class="btn ghost" type="button" id="tenant-reset-btn">Reset WA</button>
+    </div>
+    <div id="tenant-danger">
+      <button class="btn danger" type="button" id="tenant-delete-start">Delete tenant</button>
+    </div>
+    <div id="tenant-delete-confirm" hidden>
+      <p class="muted">This removes the business account, products, conversations and orders permanently.</p>
+      <div class="row">
+        <button class="btn danger" type="button" id="tenant-delete-yes">Confirm delete</button>
+        <button class="btn ghost" type="button" id="tenant-delete-no">Keep tenant</button>
+      </div>
+    </div>
+    <button class="btn ghost" type="button" id="tenant-drawer-close">Close</button>
+  </aside>
+
+  <aside class="drawer" id="account-drawer" aria-hidden="true" aria-label="Account settings">
+    <h3>Account settings</h3>
+    <p class="muted">Change your username or password. Your current password is required for any change.</p>
+    <form id="account-form" class="form-grid">
+      <input name="username" value="{{ user.username }}" placeholder="Username" autocomplete="username">
+      <input name="current_password" type="password" placeholder="Current password" autocomplete="current-password" required>
+      <input name="new_password" type="password" placeholder="New password (leave blank to keep)" autocomplete="new-password">
+      <div class="row">
+        <button class="btn" type="submit">Save changes</button>
+        <button class="btn ghost" type="button" id="account-close">Close</button>
+      </div>
+    </form>
+  </aside>
+  <div class="backdrop" id="drawer-backdrop"></div>
+
+  <script src="{% static 'app.js' %}?v=14"></script>
+</body>
+</html>

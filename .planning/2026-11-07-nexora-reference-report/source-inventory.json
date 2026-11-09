@@ -1,0 +1,999 @@
+[
+  {
+    "path": ".gitignore",
+    "sha256": "739181d2f1231c1095082e9640b3da175dbd239b50dcca2a3d662b08a74f5298",
+    "bytes": 162
+  },
+  {
+    "path": "backend/.env.example",
+    "sha256": "40aadcd3e5006e96f3f8165d78d80439d8387099ba12902390d856686d8b5c7e",
+    "bytes": 652
+  },
+  {
+    "path": "backend/core/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "functions": [],
+    "classes": []
+  },
+  {
+    "path": "backend/core/agent.py",
+    "sha256": "337f7cf592e230242c9d43cfc1c845eee44f5d233ac905d4efd54ca58143f4f8",
+    "bytes": 21155,
+    "functions": [
+      {
+        "name": "_make_http_session",
+        "line": 21,
+        "decorators": []
+      },
+      {
+        "name": "_log_error",
+        "line": 121,
+        "decorators": []
+      },
+      {
+        "name": "_request_payload",
+        "line": 128,
+        "decorators": []
+      },
+      {
+        "name": "_search_inventory",
+        "line": 141,
+        "decorators": []
+      },
+      {
+        "name": "_send_product_photo",
+        "line": 160,
+        "decorators": []
+      },
+      {
+        "name": "_customer_context",
+        "line": 187,
+        "decorators": []
+      },
+      {
+        "name": "_create_or_update_order",
+        "line": 198,
+        "decorators": [
+          "transaction.atomic"
+        ]
+      },
+      {
+        "name": "_request_human",
+        "line": 238,
+        "decorators": []
+      },
+      {
+        "name": "_match_command",
+        "line": 243,
+        "decorators": []
+      },
+      {
+        "name": "_run_tool",
+        "line": 256,
+        "decorators": []
+      },
+      {
+        "name": "run_agent",
+        "line": 274,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/core/apps.py",
+    "sha256": "bf5ed4638a9bab73339adcd2ba6542beda0edb0ac40103855bc189a89ca75e84",
+    "bytes": 140,
+    "functions": [],
+    "classes": [
+      {
+        "name": "CoreConfig",
+        "line": 4
+      }
+    ]
+  },
+  {
+    "path": "backend/core/couriers.py",
+    "sha256": "b37fba56d7e77d2b74d9669c51892d43fdd1d1608f849a2f754cd3e644602fa1",
+    "bytes": 6377,
+    "functions": [
+      {
+        "name": "_make_session",
+        "line": 8,
+        "decorators": []
+      },
+      {
+        "name": "_tracking_number",
+        "line": 15,
+        "decorators": []
+      },
+      {
+        "name": "_pathao_base",
+        "line": 23,
+        "decorators": []
+      },
+      {
+        "name": "pathao_config_error",
+        "line": 28,
+        "decorators": []
+      },
+      {
+        "name": "_pathao_issue_token",
+        "line": 42,
+        "decorators": []
+      },
+      {
+        "name": "test_pathao_connection",
+        "line": 70,
+        "decorators": []
+      },
+      {
+        "name": "create_pathao_order",
+        "line": 106,
+        "decorators": []
+      },
+      {
+        "name": "dispatch",
+        "line": 158,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/core/email_auth.py",
+    "sha256": "4cbb318efd724f74afa4bec2a669958f81ea744b1798ead2921462bcf14f8a7f",
+    "bytes": 4983,
+    "functions": [
+      {
+        "name": "password_error",
+        "line": 18,
+        "decorators": []
+      },
+      {
+        "name": "_new_code",
+        "line": 28,
+        "decorators": []
+      },
+      {
+        "name": "_dev_mode",
+        "line": 32,
+        "decorators": []
+      },
+      {
+        "name": "_stytch_post",
+        "line": 36,
+        "decorators": []
+      },
+      {
+        "name": "_stytch_b2b_send",
+        "line": 49,
+        "decorators": []
+      },
+      {
+        "name": "_stytch_b2b_verify",
+        "line": 72,
+        "decorators": []
+      },
+      {
+        "name": "send_otp",
+        "line": 84,
+        "decorators": []
+      },
+      {
+        "name": "verify_otp",
+        "line": 109,
+        "decorators": []
+      },
+      {
+        "name": "dev_code_for",
+        "line": 136,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/core/migrations/0001_initial.py",
+    "sha256": "a19b79a59d890249db2b1a7493735c6746077e7a8510b84a2f27529d6b6c1aef",
+    "bytes": 4378,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 8
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0002_tenant_plan.py",
+    "sha256": "0532c8001d19674d39cbc26375f3f5f5d72d1051e86edf90894b29a929c7c2f1",
+    "bytes": 449,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0003_order_shipment_tenant_settings_alter_order_status.py",
+    "sha256": "aaae49fad87a509fb41d09d1da3f2f5cb44d5d480c300f7afd3edefe4934eee6",
+    "bytes": 861,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0004_tenant_plan_status.py",
+    "sha256": "2306b225b4f3e0ea7704348182f18de20260f7df727d5a54c27569ce67c6e116",
+    "bytes": 495,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0005_emailotp.py",
+    "sha256": "97c9702819cac85dcfed9608b2ac6050ca9f875efe54105d11ed9336a0028cb1",
+    "bytes": 1055,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0006_product_is_active.py",
+    "sha256": "fe3af7fa029ef0d4a1cc4924998d40d899c92155d4703c531652261ba55b3477",
+    "bytes": 377,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/0007_systemconfig_request_options.py",
+    "sha256": "e6591bad81cf02de55b55611ba7c4bab8fb4c35af6eeddb5a999cfa69acdd2f7",
+    "bytes": 406,
+    "functions": [],
+    "classes": [
+      {
+        "name": "Migration",
+        "line": 6
+      }
+    ]
+  },
+  {
+    "path": "backend/core/migrations/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "functions": [],
+    "classes": []
+  },
+  {
+    "path": "backend/core/models.py",
+    "sha256": "a2251b702cb742fafc95a327ee30385eca9db3c6f0bc3f034070c8d48755e6ac",
+    "bytes": 8542,
+    "functions": [
+      {
+        "name": "plan_limits",
+        "line": 86,
+        "decorators": []
+      },
+      {
+        "name": "product_limit",
+        "line": 90,
+        "decorators": []
+      },
+      {
+        "name": "messages_per_min",
+        "line": 94,
+        "decorators": []
+      },
+      {
+        "name": "find_sku",
+        "line": 170,
+        "decorators": []
+      },
+      {
+        "name": "adjust_stock",
+        "line": 179,
+        "decorators": []
+      },
+      {
+        "name": "conversation_images",
+        "line": 188,
+        "decorators": []
+      },
+      {
+        "name": "local_image_path",
+        "line": 200,
+        "decorators": []
+      },
+      {
+        "name": "cleanup_images",
+        "line": 214,
+        "decorators": []
+      }
+    ],
+    "classes": [
+      {
+        "name": "SystemConfig",
+        "line": 11
+      },
+      {
+        "name": "Tenant",
+        "line": 50
+      },
+      {
+        "name": "EmailOTP",
+        "line": 98
+      },
+      {
+        "name": "Product",
+        "line": 116
+      },
+      {
+        "name": "Conversation",
+        "line": 130
+      },
+      {
+        "name": "Order",
+        "line": 145
+      }
+    ]
+  },
+  {
+    "path": "backend/core/views.py",
+    "sha256": "5e08fde8ef8d4c2f29f33ef8e6e75384c30815a7911721b4bf06ecc35231b053",
+    "bytes": 55224,
+    "functions": [
+      {
+        "name": "_make_http_session",
+        "line": 31,
+        "decorators": []
+      },
+      {
+        "name": "_json",
+        "line": 38,
+        "decorators": []
+      },
+      {
+        "name": "_wa_request",
+        "line": 45,
+        "decorators": []
+      },
+      {
+        "name": "_wa_send",
+        "line": 59,
+        "decorators": []
+      },
+      {
+        "name": "_start_otp_flow",
+        "line": 85,
+        "decorators": []
+      },
+      {
+        "name": "_otp_flow",
+        "line": 89,
+        "decorators": []
+      },
+      {
+        "name": "login_view",
+        "line": 94,
+        "decorators": []
+      },
+      {
+        "name": "signup_view",
+        "line": 120,
+        "decorators": []
+      },
+      {
+        "name": "signup_verify_view",
+        "line": 163,
+        "decorators": []
+      },
+      {
+        "name": "reset_request_view",
+        "line": 204,
+        "decorators": []
+      },
+      {
+        "name": "reset_verify_view",
+        "line": 229,
+        "decorators": []
+      },
+      {
+        "name": "logout_view",
+        "line": 275,
+        "decorators": []
+      },
+      {
+        "name": "home",
+        "line": 280,
+        "decorators": []
+      },
+      {
+        "name": "client_dashboard",
+        "line": 289,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "admin_dashboard",
+        "line": 303,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "api_dashboard",
+        "line": 310,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "_rate_limit",
+        "line": 328,
+        "decorators": []
+      },
+      {
+        "name": "wa_webhook",
+        "line": 349,
+        "decorators": [
+          "csrf_exempt",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "wa_status",
+        "line": 380,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_GET"
+        ]
+      },
+      {
+        "name": "wa_connect",
+        "line": 395,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "_order_message",
+        "line": 403,
+        "decorators": []
+      },
+      {
+        "name": "order_detail",
+        "line": 468,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "order_action",
+        "line": 517,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "_clean_skus",
+        "line": 563,
+        "decorators": []
+      },
+      {
+        "name": "product_save",
+        "line": 610,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST",
+          "transaction.atomic"
+        ]
+      },
+      {
+        "name": "product_archive",
+        "line": 660,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "product_duplicate",
+        "line": 675,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "product_stock",
+        "line": 719,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "product_upload",
+        "line": 745,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "tenant_settings",
+        "line": 770,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "_pathao_config",
+        "line": 805,
+        "decorators": []
+      },
+      {
+        "name": "tenant_couriers",
+        "line": 818,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "courier_test",
+        "line": 857,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "conversation_resolve",
+        "line": 871,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "account_update",
+        "line": 885,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "admin_tenant_create",
+        "line": 912,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "_tenant_detail_payload",
+        "line": 931,
+        "decorators": []
+      },
+      {
+        "name": "admin_tenant_detail",
+        "line": 955,
+        "decorators": [
+          "login_required(login_url='/login/')"
+        ]
+      },
+      {
+        "name": "admin_plan",
+        "line": 966,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "admin_tenant_delete",
+        "line": 993,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "_normalize_llm_url",
+        "line": 1015,
+        "decorators": []
+      },
+      {
+        "name": "admin_models",
+        "line": 1035,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "admin_test_llm",
+        "line": 1125,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      },
+      {
+        "name": "admin_config",
+        "line": 1350,
+        "decorators": [
+          "login_required(login_url='/login/')",
+          "require_POST"
+        ]
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/core/widgets.py",
+    "sha256": "ae2e3a29f9442b8c928a37527e13c876b6a5eaba54039397e6e7834422ee010c",
+    "bytes": 6055,
+    "functions": [
+      {
+        "name": "_units_and_revenue",
+        "line": 4,
+        "decorators": []
+      },
+      {
+        "name": "_sales_stats",
+        "line": 20,
+        "decorators": []
+      },
+      {
+        "name": "_inventory_stats",
+        "line": 35,
+        "decorators": []
+      },
+      {
+        "name": "_catalog_rows",
+        "line": 97,
+        "decorators": []
+      },
+      {
+        "name": "_tenant_rows",
+        "line": 130,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/manage.py",
+    "sha256": "522f52b51e75df9da7eb8e660d2cf0830fc504dc0fb24255fb4b639bf5484270",
+    "bytes": 274,
+    "functions": [
+      {
+        "name": "main",
+        "line": 6,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/nexora/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "functions": [],
+    "classes": []
+  },
+  {
+    "path": "backend/nexora/settings.py",
+    "sha256": "df39393d08a5de8518379e249f2613a6d7b8b961a4e94caedf9c468ac49b9c83",
+    "bytes": 3845,
+    "functions": [
+      {
+        "name": "_load_env",
+        "line": 9,
+        "decorators": []
+      }
+    ],
+    "classes": [
+      {
+        "name": "XamppFeatures",
+        "line": 75
+      }
+    ]
+  },
+  {
+    "path": "backend/nexora/urls.py",
+    "sha256": "04df9bd84e95ba334bf6a26b849321871f8003a38f36f216aaae422c6147b8a3",
+    "bytes": 2122,
+    "functions": [],
+    "classes": []
+  },
+  {
+    "path": "backend/nexora/wsgi.py",
+    "sha256": "0ea4a4b78b8148790f872df50494063f49a83ac2f5dc563dec1cff61bbd48cad",
+    "bytes": 167,
+    "functions": [],
+    "classes": []
+  },
+  {
+    "path": "backend/requirements.txt",
+    "sha256": "f3f8b3e06ce1f9bbf7559fc163a737ec04799f0ee186b3642cc70269cf6d56d4",
+    "bytes": 45
+  },
+  {
+    "path": "backend/seed_demo.py",
+    "sha256": "f61bc146243dde3be07963989372888c601e2f0edb00b15dce04ac64bba213ed",
+    "bytes": 14368,
+    "functions": [
+      {
+        "name": "seed_admin",
+        "line": 267,
+        "decorators": []
+      },
+      {
+        "name": "seed_shop",
+        "line": 280,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/smoke_test.py",
+    "sha256": "0dbdd8bc30e6c9bc9dbc304cfb525a43df96cf82a87093b98920b7d9829883b2",
+    "bytes": 47444,
+    "functions": [
+      {
+        "name": "check",
+        "line": 67,
+        "decorators": []
+      }
+    ],
+    "classes": []
+  },
+  {
+    "path": "backend/whatsapp/index.js",
+    "sha256": "336ee9e9299310e0c2112841fee92486300a5b6e73ab168daf779d966a1ca95b",
+    "bytes": 11439
+  },
+  {
+    "path": "backend/whatsapp/package-lock.json",
+    "sha256": "526ace90235c834e470134ecd8ec8ea1b4595de5947a1a56b649b4c75b98bf00",
+    "bytes": 87039
+  },
+  {
+    "path": "backend/whatsapp/package.json",
+    "sha256": "8f64982c62f15963437984c656a7f8a8e0df39eb80f7e283d8f4d0e4ef00f7f1",
+    "bytes": 353
+  },
+  {
+    "path": "backend/whatsapp/test.js",
+    "sha256": "4efc3502b3eec3546a23443d6cbc2f0521769a1e0eb4589d36b3e8ccfced3fe1",
+    "bytes": 7437
+  },
+  {
+    "path": "database/setup.sql",
+    "sha256": "44c16b7063a40c9cf0d15860cdf3e43f75f91921a2462dd1a4609277f4ade125",
+    "bytes": 334
+  },
+  {
+    "path": "frontend/static/app.js",
+    "sha256": "dc447f0f38ed333e60e9b75ab536d6e87d2da0e2b6809b12c6fa76fed7c8005a",
+    "bytes": 68652
+  },
+  {
+    "path": "frontend/static/charts.js",
+    "sha256": "aa696a889dd1a14b0ba641c40b6193118dda8d5fa36155004b8b3f950da8b6d8",
+    "bytes": 3889
+  },
+  {
+    "path": "frontend/static/favicon.svg",
+    "sha256": "ff976c2101e084249fe43a267c45166e255be8c816406e6067cfbf14e9a3e11f",
+    "bytes": 255
+  },
+  {
+    "path": "frontend/static/fonts/geist-latin.woff2",
+    "sha256": "19f9c92546aa300c312235e3125af1b81394d8db9a4bc4a425cd5b641d2d54e1",
+    "bytes": 29400
+  },
+  {
+    "path": "frontend/static/fonts/geist-mono-latin.woff2",
+    "sha256": "684ad5b531f81d43c1e8c7038262d5db7cdc1f68006e04d6c7769efa8d33c8cc",
+    "bytes": 23128
+  },
+  {
+    "path": "frontend/static/fonts/instrument-serif-latin.woff2",
+    "sha256": "5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31",
+    "bytes": 21032
+  },
+  {
+    "path": "frontend/static/fonts/OFL.txt",
+    "sha256": "cfe14d8cff9b6b9f35833170217c3398ae90abdbc617c90623cee8baa89f1992",
+    "bytes": 4451
+  },
+  {
+    "path": "frontend/static/style.css",
+    "sha256": "80fc8c708f6c51115bd00f8a220ea82d97589575398bf8017d7991e7bbb5efc0",
+    "bytes": 40809
+  },
+  {
+    "path": "frontend/templates/404.html",
+    "sha256": "aa001288715ab3dbd223d1ac80dacd7ce42c4b930dd25307cafb0e3a3c3055b7",
+    "bytes": 1032,
+    "ids": []
+  },
+  {
+    "path": "frontend/templates/admin.html",
+    "sha256": "9bfa2a4d75d0931e2b46f30dc80bd78f82f19ca0cf86554ddea05befed91ed6e",
+    "bytes": 7191,
+    "ids": [
+      "main-content",
+      "tab-overview",
+      "tenant-form",
+      "tab-ai",
+      "config-form",
+      "llm-base-url",
+      "llm-api-key",
+      "model-select",
+      "model-refresh",
+      "model-custom",
+      "request-options",
+      "system-prompt",
+      "model-test",
+      "test-result-box",
+      "config-status",
+      "tab-logs",
+      "tenant-drawer",
+      "tenant-name",
+      "tenant-plan-badge",
+      "tenant-detail",
+      "plan-form",
+      "plan-select",
+      "plan-cancel-btn",
+      "tenant-suspend-btn",
+      "tenant-reset-btn",
+      "tenant-danger",
+      "tenant-delete-start",
+      "tenant-delete-confirm",
+      "tenant-delete-yes",
+      "tenant-delete-no",
+      "tenant-drawer-close",
+      "account-drawer",
+      "account-form",
+      "account-close",
+      "drawer-backdrop"
+    ]
+  },
+  {
+    "path": "frontend/templates/auth.html",
+    "sha256": "f5c8204344339196e078146df20724962b36fe309e24123c6300bb5b49b74ae7",
+    "bytes": 5100,
+    "ids": []
+  },
+  {
+    "path": "frontend/templates/client.html",
+    "sha256": "ba0998d6d85443500d0367aa57ca0eb767e4001cb1c33842c395556a6f5b752d",
+    "bytes": 14581,
+    "ids": [
+      "main-content",
+      "tab-stats",
+      "tab-orders",
+      "tab-active",
+      "tab-products",
+      "product-form-title",
+      "product-form",
+      "product-image",
+      "upload-status",
+      "image-preview",
+      "variant-summary",
+      "variant-rows",
+      "variant-add",
+      "gen-sizes",
+      "gen-colors",
+      "variant-generate",
+      "bulk-price",
+      "bulk-price-apply",
+      "bulk-stock",
+      "bulk-stock-apply",
+      "product-reset",
+      "catalog-count",
+      "catalog-search",
+      "catalog-filters",
+      "tab-assistant",
+      "assistant-form",
+      "tab-settings",
+      "wa-status",
+      "wa-qr",
+      "wa-connect",
+      "profile-form",
+      "shipping-settings-card",
+      "pathao-status-badge",
+      "couriers-form",
+      "box-pathao",
+      "pathao-enabled",
+      "pt-env",
+      "pt-store-id",
+      "pt-client-id",
+      "pt-client-secret",
+      "pt-username",
+      "pt-password",
+      "btn-test-pathao",
+      "pt-test-status",
+      "btn-save-couriers",
+      "tab-conversations",
+      "chat-view",
+      "cancel-drawer",
+      "cancel-order-id",
+      "cancel-note",
+      "cancel-confirm",
+      "cancel-close",
+      "account-drawer",
+      "account-form",
+      "account-close",
+      "account-open-shipping",
+      "order-drawer",
+      "order-detail-id",
+      "order-drawer-close",
+      "order-drawer-body",
+      "drawer-backdrop"
+    ]
+  },
+  {
+    "path": "frontend/templates/landing.html",
+    "sha256": "216ad37e689b75fafe6122ff534b8e91bc2c9f655aed0105b4022f0ade9d4f2d",
+    "bytes": 10290,
+    "ids": [
+      "main-content",
+      "demo-chat",
+      "features",
+      "how",
+      "pricing"
+    ]
+  },
+  {
+    "path": "README.md",
+    "sha256": "50e33f04c9875ddadd8c608dd10a46888bafed6798b1788a4942179e5596479f",
+    "bytes": 13565
+  },
+  {
+    "path": "start.bat",
+    "sha256": "7da689ba0fa99c9c43be218cbf2a227056b41007c395c3b0aa0f3c82c719b228",
+    "bytes": 1516
+  },
+  {
+    "path": "start.sh",
+    "sha256": "fd89366780487bb9d13f5ac56000108a39fa819d9051e445ce4e12ec22dde5e7",
+    "bytes": 1196
+  },
+  {
+    "path": "start_mac.command",
+    "sha256": "27469ee7758e1ca744c0e283208689c1ec0e719d9d98114f6b16a2bdbf36ad29",
+    "bytes": 88
+  }
+]
