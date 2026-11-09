@@ -2,6 +2,7 @@ import base64
 import binascii
 import json
 import re
+import time
 import traceback
 import unicodedata
 from datetime import datetime, timezone
@@ -520,7 +521,13 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                     if "gpt-6" in m_name or "o1" in m_name or "o3" in m_name or "reasoning" in resp_payload or "reasoning_effort" in resp_payload:
                         resp_payload.pop("temperature", None)
 
-                    response = _post_with_waf(session, url, headers=headers, payload=resp_payload, timeout=90)
+                    response = None
+                    for attempt in range(3):
+                        response = _post_with_waf(session, url, headers=headers, payload=resp_payload, timeout=90)
+                        if response.status_code == 429 and attempt < 2:
+                            time.sleep(1.8)
+                            continue
+                        break
                     response.raise_for_status()
                     data = response.json()
                     tokens += int((data.get("usage") or {}).get("total_tokens", 0) or 0)
@@ -572,13 +579,19 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                     m_name = (config.model_name or "").lower()
                     if "gpt-6" in m_name or "o1" in m_name or "o3" in m_name or "reasoning" in chat_payload or "reasoning_effort" in chat_payload:
                         chat_payload.pop("temperature", None)
-                    response = _post_with_waf(
-                        session,
-                        url,
-                        headers=headers,
-                        payload=chat_payload,
-                        timeout=90,
-                    )
+                    response = None
+                    for attempt in range(3):
+                        response = _post_with_waf(
+                            session,
+                            url,
+                            headers=headers,
+                            payload=chat_payload,
+                            timeout=90,
+                        )
+                        if response.status_code == 429 and attempt < 2:
+                            time.sleep(1.8)
+                            continue
+                        break
                     response.raise_for_status()
                     data = response.json()
                     tokens += int((data.get("usage") or {}).get("total_tokens", 0) or 0)
