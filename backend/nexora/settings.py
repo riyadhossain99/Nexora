@@ -89,6 +89,7 @@ class XamppFeatures(DatabaseFeatures):
         return (10, 4) if self.connection.mysql_is_mariadb else (8, 0)
 
     can_return_columns_from_insert = False  # INSERT ... RETURNING needs MariaDB 10.5+.
+    supports_expression_defaults = False  # TiDB / MariaDB syntax compatibility for JSON defaults
 
 
 DatabaseWrapper.features_class = XamppFeatures
