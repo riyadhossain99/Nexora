@@ -163,6 +163,27 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "search_and_send_product_photo",
+            "description": "Search inventory for a product and attach its catalogue photo to send to the customer on WhatsApp.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "product_name": {
+                        "type": "string",
+                        "description": "Exact name or keywords of the product in the catalogue",
+                    },
+                    "caption": {
+                        "type": "string",
+                        "description": "Optional brief caption (e.g. product name and price)",
+                    },
+                },
+                "required": ["product_name"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "get_customer_context",
             "description": "Get the customer's saved name, address and recent orders.",
             "parameters": {
@@ -379,9 +400,10 @@ def _match_command(settings_data, text):
 
 def _run_tool(tenant, phone, name, args, media_collector=None):
     if name == "search_inventory":
-        return _search_inventory(tenant, args.get("query"))
-    if name == "send_product_photo":
-        res = _send_product_photo(tenant, args.get("product_name"), args.get("caption"))
+        return _search_inventory(tenant, args.get("query") or args.get("product_name"))
+    if name in ("send_product_photo", "search_and_send_product_photo"):
+        pname = args.get("product_name") or args.get("query")
+        res = _send_product_photo(tenant, pname, args.get("caption"))
         if res.get("ok") and res.get("image_url") and media_collector is not None:
             if not any(m.get("url") == res["image_url"] for m in media_collector):
                 media_collector.append({"url": res["image_url"], "caption": res.get("caption", "")})
