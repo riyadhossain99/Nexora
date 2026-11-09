@@ -1071,8 +1071,9 @@ def admin_models(request):
 
     for ep in endpoints:
         try:
+            print(f"[admin_models DEBUG] key_len={len(key)} target_host={urlparse(base).netloc} saved_host={urlparse(config.llm_base_url or '').netloc} config_key_len={len(config.api_key or '')}")
             r = session.get(ep, headers=headers, timeout=12)
-            print(f"[admin_models DEBUG] ep={ep} status={r.status_code} ct={r.headers.get('content-type')} text={r.text[:100]}")
+            print(f"[admin_models DEBUG] ep={ep} status={r.status_code} ct={r.headers.get('content-type')} title={'<title>' + r.text.split('<title>')[1].split('</title>')[0] if '<title>' in r.text else r.text[:100]}")
             if r.status_code == 200:
                 try:
                     r.json()
