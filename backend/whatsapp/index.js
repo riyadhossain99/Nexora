@@ -6,7 +6,7 @@ const baileys = require("@whiskeysockets/baileys");
 const { useMultiFileAuthState, DisconnectReason, downloadMediaMessage } = baileys;
 const makeWASocket = baileys.default || baileys.makeWASocket;
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.WA_BRIDGE_PORT || 3001;
 const DJANGO = process.env.DJANGO_URL || "http://127.0.0.1:8000";
 const SESSIONS = path.join(__dirname, "sessions");
 const MEDIA = path.resolve(__dirname, "..", "..", "frontend", "media");
