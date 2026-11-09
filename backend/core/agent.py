@@ -447,7 +447,7 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
         system_prompt += "\nCatalog product names: " + (", ".join(names) if names else "(empty)")
 
         api_messages = [{"role": "system", "content": system_prompt}]
-        for m in baseline[-40:]:
+        for m in baseline[-8:]:
             content = str(m.get("content", ""))
             if "temporarily unavailable" in content:
                 continue
@@ -658,12 +658,12 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
             reply = f"{greeting}\n\n{reply}"
 
     history = baseline + [entry]
-    if reply or media_to_send:
+    if (reply and "temporarily unavailable" not in reply) or media_to_send:
         msg = {"role": "assistant", "content": reply or ""}
         if media_to_send:
             msg["media"] = media_to_send
         history.append(msg)
-    conv.messages = history[-60:]
+    conv.messages = history[-20:]
     conv.save()
     cleanup_images(conversation_images(baseline))
 
