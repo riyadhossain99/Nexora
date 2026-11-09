@@ -2,6 +2,7 @@ import base64
 import binascii
 import json
 import re
+import traceback
 import unicodedata
 from datetime import datetime, timezone
 from threading import Lock
@@ -91,13 +92,16 @@ def _solve_acw_sc_v2(arg1: str) -> str:
 
 def _post_with_waf(session, url, headers, payload, timeout=90):
     r = session.post(url, headers=headers, json=payload, timeout=timeout)
+    print(f"[post_with_waf DEBUG] 1st status={r.status_code} ct={r.headers.get('content-type')} len={len(r.text)} preview={r.text[:200]!r}")
     if r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
         m = re.search(r"var arg1=['\"]([a-fA-F0-9]{40})['\"];", r.text)
         if m:
             acw_cookie = _solve_acw_sc_v2(m.group(1))
+            print(f"[post_with_waf DEBUG] solved acw_sc__v2={acw_cookie}")
             if acw_cookie:
                 session.cookies.set("acw_sc__v2", acw_cookie)
                 r = session.post(url, headers=headers, json=payload, timeout=timeout)
+                print(f"[post_with_waf DEBUG] 2nd status={r.status_code} ct={r.headers.get('content-type')} len={len(r.text)} preview={r.text[:200]!r}")
     return r
 
 DEFAULT_PROMPT = (
@@ -563,6 +567,7 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                         )
         except Exception as exc:
             print(f"[run_agent ERROR] LLM failure for '{tenant.business_name}' (phone={phone}): {exc}")
+            traceback.print_exc()
             _log_error(config, f"agent tenant={tenant.id} phone={phone}: {exc}")
             conv.needs_human = True
             reply = (
