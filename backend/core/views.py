@@ -1368,6 +1368,13 @@ def admin_test_llm(request):
     reply_snippet = ""
     try:
         reply_data = res.json()
+    except Exception as e:
+        print(f"[test_llm DEBUG] res.text len={len(res.text)}: {res.text[:2000]}")
+        return JsonResponse({
+            "ok": False,
+            "live": False,
+            "error": f"Provider returned non-JSON HTML challenge: {res.text[:200]}"
+        }, status=400)
         choices = reply_data.get("choices") or []
         if choices and isinstance(choices, list):
             first = choices[0]
