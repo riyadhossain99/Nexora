@@ -92,6 +92,14 @@ class XamppFeatures(DatabaseFeatures):
     supports_expression_defaults = False  # TiDB / MariaDB syntax compatibility for JSON defaults
 
 
+from django.db.backends.mysql.schema import DatabaseSchemaEditor
+_orig_skip_default = DatabaseSchemaEditor.skip_default
+def _tidb_skip_default(self, field):
+    if field.db_type(self.connection) == "json":
+        return True
+    return _orig_skip_default(self, field)
+DatabaseSchemaEditor.skip_default = _tidb_skip_default
+
 DatabaseWrapper.features_class = XamppFeatures
 _db_options = {"charset": "utf8mb4", "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"}
 if os.environ.get("DB_SSL", "0") in ("1", "true", "True"):
