@@ -1072,6 +1072,7 @@ def admin_models(request):
     for ep in endpoints:
         try:
             r = session.get(ep, headers=headers, timeout=12)
+            print(f"[admin_models DEBUG] ep={ep} status={r.status_code} ct={r.headers.get('content-type')} text={r.text[:100]}")
             if r.status_code == 200:
                 try:
                     r.json()
