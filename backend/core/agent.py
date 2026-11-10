@@ -102,11 +102,18 @@ def _post_with_waf(session, url, headers, payload, timeout=90):
     req_headers["Accept"] = "application/json"
     req_headers["Content-Type"] = "application/json"
     r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
-    if is_agentrouter and r.status_code == 200 and ("arg1" in r.text or "text/html" in r.headers.get("content-type", "")):
+    if is_agentrouter and ("arg1" in (r.text or "") or "text/html" in r.headers.get("content-type", "")):
         m = re.search(r"var arg1=['\"]([a-fA-F0-9]{40})['\"];", r.text)
         if m:
             acw_cookie = _solve_acw_sc_v2(m.group(1))
             if acw_cookie:
+                host = urlsplit(url).hostname or "agentrouter.org"
+                cookie_str = f"acw_sc__v2={acw_cookie}"
+                tc = r.cookies.get("acw_tc") or session.cookies.get("acw_tc")
+                if tc:
+                    cookie_str += f"; acw_tc={tc}"
+                req_headers["Cookie"] = cookie_str
+                session.cookies.set("acw_sc__v2", acw_cookie, domain=host)
                 session.cookies.set("acw_sc__v2", acw_cookie)
                 r = session.post(url, headers=req_headers, json=payload, timeout=timeout)
     return r
@@ -583,7 +590,13 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                             continue
                         break
                     response.raise_for_status()
-                    data = response.json()
+                    try:
+                        data = response.json()
+                    except Exception as exc:
+                        snippet = (response.text or "")[:400].replace("\n", " ").strip()
+                        raise RuntimeError(
+                            f"Invalid JSON from LLM (status={response.status_code}, ctype={response.headers.get('content-type')}): {snippet}"
+                        ) from exc
                     tokens += int((data.get("usage") or {}).get("total_tokens", 0) or 0)
                     output_items = data.get("output") or []
 
@@ -647,7 +660,13 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
                             continue
                         break
                     response.raise_for_status()
-                    data = response.json()
+                    try:
+                        data = response.json()
+                    except Exception as exc:
+                        snippet = (response.text or "")[:400].replace("\n", " ").strip()
+                        raise RuntimeError(
+                            f"Invalid JSON from LLM (status={response.status_code}, ctype={response.headers.get('content-type')}): {snippet}"
+                        ) from exc
                     tokens += int((data.get("usage") or {}).get("total_tokens", 0) or 0)
                     message = data["choices"][0]["message"]
                     calls = message.get("tool_calls") or []
