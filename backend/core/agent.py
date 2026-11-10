@@ -730,13 +730,13 @@ def run_agent(tenant, phone, text, image=None, return_media=False):
         if greeting:
             reply = f"{greeting}\n\n{reply}"
 
-    history = baseline + [entry]
     if (reply and "temporarily unavailable" not in reply) or media_to_send:
+        history = baseline + [entry]
         msg = {"role": "assistant", "content": reply or ""}
         if media_to_send:
             msg["media"] = media_to_send
         history.append(msg)
-    conv.messages = history[-20:]
+        conv.messages = history[-20:]
     conv.save()
     cleanup_images(conversation_images(baseline))
 
