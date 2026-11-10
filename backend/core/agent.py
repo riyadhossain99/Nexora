@@ -112,19 +112,22 @@ def _post_with_waf(session, url, headers, payload, timeout=90):
     return r
 
 DEFAULT_PROMPT = (
-    "You are a dedicated sales assistant for {business} on WhatsApp. "
-    "You strictly answer questions ONLY about {business}, its products, catalog items, pricing, "
-    "stock availability, order placement, order status, and store services. "
-    "Do not answer general knowledge, mathematical, technical, personal, or any off-topic questions outside of this shop. "
-    "If a customer asks anything unrelated to {business} or its products, decline politely: "
-    "'Sorry, I can only answer questions related to our products and store services. Let me know if you would like information on any of our items.' "
-    "Reply briefly, politely, and professionally in the customer's language. Never use emojis; keep all responses clean, professional, and factual. "
-    "Never invent products, prices, stock or delivery times: always use search_inventory first and quote only what it returns. "
-    "You can send catalogue photos of products to the customer using the send_product_photo tool. "
-    "Whenever a customer asks to see pictures, photos, or what a product looks like, or asks you to show them an item, always call send_product_photo with the product name. "
-    "To place an order you must have the customer's full name, full delivery address, exact SKU and quantity, all confirmed by the customer. "
-    "Use get_customer_context for returning customers. Then call create_or_update_order. "
-    "For custom, unclear or complex requests call request_human_support."
+    "You are a sales and customer support assistant for {business} on WhatsApp.\n\n"
+    "1. STRICT SCOPE:\n"
+    "- Strictly answer questions ONLY about {business}, products, catalog items, prices, stock, sizing, delivery, and orders.\n"
+    "- If a query is unrelated, decline politely in a single sentence: "
+    "'I am only able to help with {business} products and orders. How can I assist you with our catalog today?'\n\n"
+    "2. INVENTORY & CATALOG PHOTOS:\n"
+    "- Always check search_inventory for items, prices, and stock before quoting.\n"
+    "- When a customer describes an item, sends a photo, or asks to see pictures, call send_product_photo with the product name.\n\n"
+    "3. ORDER PLACEMENT (MANDATORY TOOL CALL):\n"
+    "- When the customer confirms an order or provides delivery details (full name and delivery address):\n"
+    "  YOU MUST IMMEDIATELY CALL THE create_or_update_order TOOL!\n"
+    "- CRITICAL: Never tell the customer 'Your order has been placed' or 'Order confirmed' unless you have executed create_or_update_order and received a successful response from the tool.\n"
+    "- Quote the Order ID (e.g. #191) and the total amount returned by the tool.\n"
+    "- Accept reasonable delivery addresses (e.g. House 12, Gate 1 Dhaka City College) without arguing or demanding unnecessary extra fields.\n\n"
+    "4. TONE & STYLE:\n"
+    "- Reply concisely, politely, and professionally in the customer's language. Never use emojis."
 )
 
 TOOLS = [
@@ -197,17 +200,22 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "create_or_update_order",
-            "description": "Create a PENDING order, or add an item to this customer's existing PENDING order. Validates SKU stock and deducts it.",
+            "description": (
+                "Create a PENDING order or add an item to an order. "
+                "MANDATORY: Call this tool immediately whenever the customer confirms an order "
+                "or provides their delivery details (name and address). "
+                "Validates SKU stock, deducts it, and saves the order to the database."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "name": {"type": "string", "description": "Customer full name"},
-                    "address": {"type": "string", "description": "Full delivery address"},
-                    "sku": {"type": "string", "description": "Exact SKU code from search_inventory"},
-                    "qty": {"type": "integer", "description": "Quantity"},
-                    "notes": {"type": "string", "description": "Optional notes (customization, landmark)"},
+                    "address": {"type": "string", "description": "Delivery address"},
+                    "sku": {"type": "string", "description": "Exact SKU code (e.g. ZF-BAG-RED-STD) or product name and variant (e.g. 'Red Structured Shoulder Bag')"},
+                    "qty": {"type": "integer", "description": "Quantity to order (default 1)"},
+                    "notes": {"type": "string", "description": "Optional notes, color, or size details"},
                 },
-                "required": ["name", "address", "sku", "qty"],
+                "required": ["name", "address", "sku"],
             },
         },
     },
@@ -215,7 +223,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "request_human_support",
-            "description": "Escalate to the business owner when the request is custom, unclear or outside the catalog.",
+            "description": "Escalate to the business owner when the customer specifically requests human staff or has a formal complaint.",
             "parameters": {
                 "type": "object",
                 "properties": {"reason": {"type": "string"}},
@@ -342,30 +350,57 @@ def _customer_context(tenant, phone):
 
 @transaction.atomic
 def _create_or_update_order(tenant, phone, args):
-    sku_code = str(args.get("sku") or "").strip()
-    name = str(args.get("name") or "").strip()
-    address = str(args.get("address") or "").strip()
+    sku_code = str(args.get("sku") or args.get("product_name") or args.get("item") or args.get("product") or "").strip()
+    name = str(args.get("name") or args.get("customer_name") or "").strip()
+    address = str(args.get("address") or args.get("delivery_address") or "").strip()
+    notes = str(args.get("notes") or "").strip()
     try:
-        qty = max(1, int(args.get("qty") or 1))
+        qty = max(1, int(args.get("qty") or args.get("quantity") or 1))
     except (TypeError, ValueError):
         qty = 1
+
+    conv = Conversation.objects.filter(tenant=tenant, customer_phone=phone).first()
+    if not name and conv and conv.customer_name:
+        name = conv.customer_name
     if not name or not address:
-        return {"error": "Customer name and address are required."}
+        return {"error": "Customer name and delivery address are required to place an order."}
+
     product, sku = find_sku(tenant, sku_code)
     if not sku:
-        return {"error": f"SKU '{sku_code}' not found. Use search_inventory for exact SKU codes."}
+        q = f"{sku_code} {notes}".lower()
+        for p in Product.objects.filter(tenant=tenant, is_active=True):
+            p_name = p.name.lower()
+            if p_name in q or any(w in p_name for w in re.findall(r"\w+", q) if len(w) > 3):
+                product = p
+                skus = p.skus or []
+                if skus:
+                    for s in skus:
+                        s_color = str(s.get("color") or "").lower()
+                        s_size = str(s.get("size") or "").lower()
+                        if (s_color and s_color in q) or (s_size and s_size in q):
+                            sku = s
+                            sku_code = s.get("sku") or sku_code
+                            break
+                    if not sku:
+                        sku = skus[0]
+                        sku_code = sku.get("sku") or sku_code
+                break
+
+    if not sku:
+        return {"error": f"Product or SKU '{sku_code}' was not found in the catalog. Use search_inventory first."}
     if product and not product.is_active:
         return {"error": f"'{product.name}' is no longer available for ordering."}
     if int(sku.get("stock", 0) or 0) < qty:
-        return {"error": f"Insufficient stock for {sku_code}: only {sku.get('stock', 0)} left."}
+        return {"error": f"Insufficient stock for {sku.get('sku', sku_code)}: only {sku.get('stock', 0)} left."}
 
     price = float(sku.get("price") or product.base_price or 0)
+    actual_sku = sku.get("sku") or sku_code
     item = {
-        "sku": sku_code,
+        "sku": actual_sku,
         "qty": qty,
         "product": product.name,
         "price": price,
-        "notes": str(args.get("notes") or ""),
+        "notes": notes,
     }
     order = Order.objects.filter(tenant=tenant, customer_phone=phone, status="PENDING").first()
     items = (list(order.items) if order else []) + [item]
@@ -377,8 +412,20 @@ def _create_or_update_order(tenant, phone, args):
     order.total = sum(float(i.get("price", 0)) * int(i.get("qty", 1)) for i in items)
     order.status = "PENDING"
     order.save()
-    adjust_stock(tenant, sku_code, -qty)
-    return {"ok": True, "order_id": order.id, "total": order.total}
+    adjust_stock(tenant, actual_sku, -qty)
+    Conversation.objects.filter(tenant=tenant, customer_phone=phone).update(customer_name=name)
+    return {
+        "ok": True,
+        "success": True,
+        "order_id": order.id,
+        "total": float(order.total),
+        "product": product.name,
+        "sku": actual_sku,
+        "qty": qty,
+        "customer_name": name,
+        "address": address,
+        "note": f"Order #{order.id} placed successfully in database. Total: ${order.total:.2f}."
+    }
 
 
 def _request_human(tenant, phone, reason):
@@ -400,21 +447,28 @@ def _match_command(settings_data, text):
 
 
 def _run_tool(tenant, phone, name, args, media_collector=None):
-    if name == "search_inventory":
+    clean_name = re.sub(r"[^a-z0-9_]", "", str(name or "").lower().strip())
+
+    if clean_name in ("search_inventory", "searchinventory", "inventory"):
         return _search_inventory(tenant, args.get("query") or args.get("product_name"))
-    if name in ("send_product_photo", "search_and_send_product_photo"):
-        pname = args.get("product_name") or args.get("query")
+
+    if clean_name in ("send_product_photo", "search_and_send_product_photo", "sendproductphoto", "searchandsendproductphoto") or "photo" in clean_name or "picture" in clean_name:
+        pname = args.get("product_name") or args.get("query") or args.get("product")
         res = _send_product_photo(tenant, pname, args.get("caption"))
         if res.get("ok") and res.get("image_url") and media_collector is not None:
             if not any(m.get("url") == res["image_url"] for m in media_collector):
                 media_collector.append({"url": res["image_url"], "caption": res.get("caption", "")})
         return res
-    if name == "get_customer_context":
+
+    if clean_name in ("get_customer_context", "getcustomercontext", "customercontext", "customer_context") or "context" in clean_name:
         return _customer_context(tenant, phone)
-    if name == "create_or_update_order":
+
+    if "order" in clean_name:
         return _create_or_update_order(tenant, phone, args)
-    if name == "request_human_support":
+
+    if "human" in clean_name or "support" in clean_name or "escalat" in clean_name:
         return _request_human(tenant, phone, args.get("reason", ""))
+
     return {"error": f"Unknown tool '{name}'"}
 
 
